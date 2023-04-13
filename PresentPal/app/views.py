@@ -1,5 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .models import User, Auth, Gift
+from .serializer import GiftSerializer
 
-def index(request):
-    return HttpResponse("Hello amazing world in Python")
+@api_view(["GET"])
+def giftlist(request, user_id):
+    giftlist = Gift.objects.filter(user__id=user_id)
+    serializer = GiftSerializer(giftlist, many=True)
+    return Response(serializer.data)
