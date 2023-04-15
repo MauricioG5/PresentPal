@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import User, Auth, Gift
 from .serializer import GiftSerializer, UserSerializer
+import bcrypt
 
 @api_view(["GET"])
 def detail(request, user_id):
@@ -26,8 +27,9 @@ def addGift(request, user_id):
 @api_view(["POST"])
 def createUser(request):
     data = request.data
+    hashed = bcrypt.hashpw(data["password"].encode(), bcrypt.gensalt())
     user = User(nickname=data["nickname"], date_of_birth=data["date_of_birth"])
-    auth = Auth(email=data["email"], password=data["password"], user=user)
+    auth = Auth(email=data["email"], password=hashed, user=user)
     user.save()
     auth.save()
     serializer = UserSerializer(user)
