@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.core.exceptions import BadRequest
 from .models import User, Auth, Gift
 from .serializer import GiftSerializer, UserSerializer
 import bcrypt
 
 @api_view(["GET"])
-def detail(request, user_id):
+def listGifts(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     giftlist = user.gift_set.all()
     serializer = GiftSerializer(giftlist, many=True)
@@ -52,5 +53,32 @@ def updateUser(request, user_id):
 
     user.save()
     auth.save()
-    serialzer = UserSerializer(user)
-    return Response(serialzer.data)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def profile(request, user_id):
+    #TODO show associated auth only if the user has an id token
+    user = User.objects.get(pk=user_id)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+def login(request):
+    data = request.data
+    return
+
+@api_view(["DELETE"])
+def remove_gift(request, gift_id):
+    gift = Gift.objects.get(pk=gift_id)
+    if(gift):
+        gift.delete()
+        return Response({"id": gift_id})
+    raise BadRequest('Invalid request.')
+
+
+#TODO
+    #LOGIN -
+    #REMOVEGIFT
+    #DELETEACCOUNT
+    #SHOWPROFILE --
