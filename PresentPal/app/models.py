@@ -16,9 +16,6 @@ class Auth(models.Model):
 
 class Gift(models.Model):
     gift_name = models.CharField(max_length=200)
-    #TODO delete price column 
-    price = models.IntegerField(blank=True, null=True)
-    #TODO 
     link = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
